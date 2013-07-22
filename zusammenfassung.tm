@@ -649,13 +649,165 @@
 
     <item*|Positionsbasierte Kryptographie>Authentifikation, dass <math|P>
     sich an gegebener Position befindet. Mehrere Verifier <math|V> nötig.
+
+    Grundsätzlich ist eine positionspasierte Authentifikation unter den
+    bisherigen Annahmen unmöglich. Lösung z.B. speicherplatzbeschränkte
+    Angreifer.
   </description>
 
   <subsection|Zugriffskontrolle>
 
+  <\description>
+    <item*|Motivation>Mehrbenutzersystem, gemeinsamer Zugriff auf Dateien mit
+    verschiedenen Sicherheitsstufen
+
+    <item*|Bell-LaPadula>Betrachte Systemzustände. Systemzustand kann sicher
+    sein, gültige Anfrage überführt sicheren in sicheren Systemzustand.
+
+    Menge <math|\<cal-S\>> von Nutzern (Subjekten), Menge <math|\<cal-O\>>
+    von Dateien (Objekten), Menge <math|\<cal-A\>> von Operationen (hier:
+    <verbatim|read, write, append, execute>), <math|\<cal-L\>> halbgeordnete
+    Menge von Sicherheitsleveln.
+
+    Systemzustand: besteht aus Zugriffsmenge
+    <math|B\<subseteq\><around*|{|S\<times\>O\<times\>A|}>>,
+    Zugriffskontrollmatrix <math|M> mit Untermengen von <math|\<cal-A\>> als
+    Elementen, Tupel <math|F=<around*|(|f<rsub|s>,f<rsub|c>,f<rsub|o>|)>>,
+    wobei <math|f<rsub|s>,f<rsub|c>> den maximalen bzw. aktuellen Level der
+    Subjekte, <math|f<rsub|o>> den Level der Objekte beschreibt.
+
+    <\description>
+      <item*|Discrectionary Security (ds)>Für alle Zugriffe
+      <math|<around*|(|s,o,a|)>> muss <math|a\<in\>M<rsub|s,o>> gelten
+
+      <item*|Simple Security (ss) / NoReadUp>Für alle <strong|Lese>zugriffe
+      <math|<around*|(|s,o,read|)>> muss gelten:
+      <math|f<rsub|s><around*|(|s|)>\<geqslant\>f<rsub|o><around*|(|o|)>>.
+      Nach einer genehmigten Anfrage wird <math|f<rsub|c><around*|(|s|)>>
+      gegebenenfalls angepasst.
+
+      <item*|Star Property (<math|\<star\>>) / NoWriteDown>Für alle
+      <strong|Schreib>zugriffe <math|<around*|(|s,o,write/append|)>> muss
+      gelten: <math|f<rsub|c><around*|(|s|)>\<leqslant\>f<rsub|o><around*|(|o|)>>.
+    </description>
+
+    Nachteile: Keine Verhinderung verdeckter Kanäle, statisch, unhandlich (da
+    <math|f<rsub|c>> nur wachsen kann)
+
+    <item*|Chinese Wall>Menge <math|\<cal-C\>> von Firmen, Menge
+    <math|\<cal-S\>> von Beratern, Menge <math|\<cal-O\>> von Objekten. Jedes
+    Objekt <math|o> gehört zur Firma <math|y<around*|(|o|)>> und hat
+    Konflikte mit Firmen <math|x<around*|(|o|)>\<subseteq\>\<cal-C\>>.
+
+    Betrachte Zugriffe <math|<around*|(|s,o|)>>:
+
+    <\description>
+      <item*|Simple Security (ss)>Für alle <math|o<rprime|'>\<in\>\<cal-O\>>,
+      auf die <math|s> schon Zugriff hatte, gilt
+      <math|y<around*|(|o|)>=y<around*|(|o<rprime|'>|)>> oder
+      <math|y<around*|(|o|)>\<nin\>x<around*|(|o<rprime|'>|)>> (gehören
+      entweder zur gleichen Firma oder stehen nicht mit <math|o<rprime|'>> in
+      Konflikt)
+
+      <item*|Star Property (<math|\<star\>>)>Für <strong|Schreib>anfragen:
+      Für alle Objekte <math|o<rprime|'>>, auf die <math|s> schon
+      <strong|lesend> zugreift, gilt <math|y<around*|(|o<rprime|'>|)>=y<around*|(|o|)>>
+      oder <math|x<around*|(|o<rprime|'>|)>=\<emptyset\>>. (Kein
+      Informationsfluss aus Firma heraus, auÿer wenn unkritisch, weil Objekt
+      keine Konflikte hat.)
+    </description>
+
+    Vollständig dynamisch
+  </description>
+
   <subsection|Analyse gröÿerer Systeme>
 
+  <subsubsection|Security-Zugang>
+
+  <\description>
+    <item*|Motivation>Prüfe gezielt Eigenschaften des Gesamtsystems, z.B. CIA
+    (Confidentiality, Integrity, Availability)
+
+    Konkrete Schutzziele aber anwendungsabhängig.
+
+    Sicherheit gröÿerer Systeme überhaupt erst mit CIA-Paradigma
+    beherrschbar.
+  </description>
+
+  <subsubsection|Kryptographischer Zugang>
+
+  <\description>
+    <item*|Motivation>Vergleiche reales System mit vereinfachtem, idealem
+    System <math|\<rightarrow\>> reales System sicher, wenn \Rso sicher wie``
+    Idealisierung. Ziel: genereller Sicherheitsbegriff.
+
+    Ziel nicht durch Eigenschaften, sondern durch idealisiertes System
+    vorgeben.
+
+    <item*|Relation <math|\<geqslant\>> auf
+    Protokollen><math|\<pi\><rsub|real>\<geqslant\>\<pi\><rsub|ideal>> heiÿt
+    <math|\<pi\><rsub|real>> mindestens so sicher wie
+    <math|\<pi\><rsub|ideal>>.
+
+    <math|\<pi\><rsub|1>> ist so sicher wie <math|\<pi\><rsub|2>>
+    (<math|\<pi\><rsub|1>\<geqslant\>\<pi\><rsub|2>>), wenn für jeden
+    effizienten Angreifer <math|\<cal-A\><rsub|1>> auf <math|\<pi\><rsub|1>>
+    ein effizienter Angreifer <math|\<cal-A\><rsub|2>> auf
+    <math|\<pi\><rsub|2>> existiert, so dass nicht effizient zwischen
+    <math|<around*|(|\<pi\><rsub|1>,\<cal-A\><rsub|1>|)>> und
+    <math|<around*|(|\<pi\><rsub|2>,\<cal-A\><rsub|2>|)>> unterschieden
+    werden kann.
+
+    <item*|Kompositionstheorem>Sei <math|\<pi\><rsup|\<tau\>>> ein Protokoll
+    mit Unterprotokoll <math|\<tau\>>, und sei
+    <math|\<rho\>\<geqslant\>\<tau\>>. Dann gilt
+    <math|\<pi\><rsup|\<rho\>>\<geqslant\>\<pi\><rsup|\<tau\>>>. Zentral für
+    modulare Analyse.
+
+    <item*|Modulare Analyse>Formuliere gröÿeres Protokoll
+    <math|\<pi\><rsup|\<tau\>>> mit <em|idealisiertem> Baustein
+    <math|\<tau\>> und beweise <math|\<pi\><rsup|\<tau\>>\<geqslant\>\<pi\><rprime|'>>
+    (wobei <math|\<pi\><rprime|'>> = Protokollziel, z.B. sicheres
+    Online-Banking). Ersetze dann idealisierte Bausteine durch reale
+    Bausteine <math|\<rho\>> mit <math|\<rho\>\<geqslant\>\<tau\>>
+    <math|\<Rightarrow\>> <math|\<pi\><rsup|\<rho\>>\<geqslant\>\<pi\><rsup|\<tau\>>\<geqslant\>\<pi\><rprime|'>>.
+
+    Erlaubt getrennte Analyse von Teilsystemen
+  </description>
+
   <subsection|Häufige Sicherheitslücken>
+
+  Ziel: Was kann bei <em|Implementierung> schiefgehen?
+
+  <\description>
+    <item*|Buffer Overflows>Wenn Benutzereingaben ohne Überprüfung der
+    Eingabelänge verarbeitet werden, können Variablen/Speicherbereiche
+    überschrieben werden.
+
+    z.B. Rücksprungadresse auf Stack ersetzen.
+
+    Gegenmaÿnahmen: sichere Programmiersprachen, sichere Routinen, DEP, ALSR.
+
+    <item*|Denial of Service>Verfügbarkeit eines Systems durch viele Anfragen
+    angreifen. Prinzipiell nur schwer verhinderbar
+
+    Geschicktere Angriffe z.B. Hashtable-Kollisionen bei GET-Parametern
+
+    <item*|Code Execution>Schlimm.
+
+    <item*|Cross Site Scripting>Beispielsweise Einschleusen von JS-Code in
+    Benutzereingaben, der bei anderem Benutzer ausgeführt wird. Hat z.B.
+    Zugriff auf Cookies.
+
+    <item*|SQL Injection>Mangelhafte Überprüfung/Escaping von
+    Benutzereingaben.
+
+    <item*|Schlechte Zufallsgeneratoren>Mehrmals gleiches <math|e> für
+    ElGamal-Signaturen verwenden, Debian-OpenSSL-Problem.
+
+    <item*|Schlechte APIs>Unfähige Programmierer, die APIs schnell lernen
+    wollen; APIs, die blödsinnige Eingaben nicht verhindern.
+  </description>
 </body>
 
 <\initial>
@@ -674,7 +826,9 @@
     <associate|auto-14|<tuple|10|?>>
     <associate|auto-15|<tuple|11|?>>
     <associate|auto-16|<tuple|12|?>>
-    <associate|auto-17|<tuple|13|?>>
+    <associate|auto-17|<tuple|12.1|?>>
+    <associate|auto-18|<tuple|12.2|?>>
+    <associate|auto-19|<tuple|13|?>>
     <associate|auto-2|<tuple|2|?>>
     <associate|auto-3|<tuple|3|?>>
     <associate|auto-4|<tuple|4|?>>
@@ -705,41 +859,57 @@
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-4>>
 
-      <with|par-left|<quote|1.5fn>|Symmetrische Nachrichtenauthentifikation
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <with|par-left|<quote|1.5fn>|Symmetrische Nachrichtenauthentifikation:
+      MACs <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-5>>
 
-      <with|par-left|<quote|1.5fn>|Asymmetrische Nachrichtenauthentifikation
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <with|par-left|<quote|1.5fn>|Asymmetrische Nachrichtenauthentifikation:
+      Digitale Signaturen <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-6>>
 
       <with|par-left|<quote|1.5fn>|Schlüsselaustauschprotokolle
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-7>>
 
-      <with|par-left|<quote|1.5fn>|Identifikationsprotokolle
+      <with|par-left|<quote|3fn>|Symmetrische Verfahren
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-8>>
 
-      <with|par-left|<quote|1.5fn>|Zero-Knowledge-Protokolle
+      <with|par-left|<quote|3fn>|Asymmetrische Verfahren
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-9>>
 
-      <with|par-left|<quote|1.5fn>|Benutzerauthentifikation
+      <with|par-left|<quote|3fn>|TLS (Transport Layer Security)
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-10>>
 
-      <with|par-left|<quote|1.5fn>|Zugriffskontrolle
+      <with|par-left|<quote|3fn>|Weitere Schlüsselaustauschprotokolle
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-11>>
 
-      <with|par-left|<quote|1.5fn>|Analyse gröÿerer Systeme
+      <with|par-left|<quote|1.5fn>|Identifikationsprotokolle
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-12>>
 
-      <with|par-left|<quote|1.5fn>|Häufige Sicherheitslücken
+      <with|par-left|<quote|1.5fn>|Zero-Knowledge-Protokolle
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-13>>
+
+      <with|par-left|<quote|1.5fn>|Benutzerauthentifikation
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-14>>
+
+      <with|par-left|<quote|1.5fn>|Zugriffskontrolle
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-15>>
+
+      <with|par-left|<quote|1.5fn>|Analyse gröÿerer Systeme
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-16>>
+
+      <with|par-left|<quote|1.5fn>|Häufige Sicherheitslücken
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-17>>
     </associate>
   </collection>
 </auxiliary>
