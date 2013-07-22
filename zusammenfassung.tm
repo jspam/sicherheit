@@ -434,11 +434,222 @@
 
   <subsection|Schlüsselaustauschprotokolle>
 
+  <\description>
+    <item*|Ziel>Austausch eines gemeinsamen Schlüssels <math|K> über
+    unsicheren Kommunikationskanal
+  </description>
+
+  <subsubsection|Symmetrische Verfahren>
+
+  <\description>
+    <item*|Schlüsselzentrum>KC kennt Schlüssel aller Benutzer; Kommunikation
+    mit KC soll minimiert werden. Verwendung von symmetrischer
+    Verschlüsselung.
+
+    <item*|Kerberos>Aktiv sichere Verschlüsselung nötig, Sicherheit nicht
+    formal geklärt. Authentifiziert Alice und Bob auch.
+
+    <\enumerate-numeric>
+      <item>Alice schickt <math|<around*|(|Alice,Bob|)>> an KC
+
+      <item>KC schickt Schlüssel an Alice (einmal verschlüsselt mit
+      <math|K<rsub|A>>, einmal mit <math|K<rsub|B>>), jeweils mit
+      Zeitstempel, Gültigkeitsdauer, Name des Kommunikationspartners
+
+      <item>Alice schickt Zeitstempel verschlüsselt mit <math|K> sowie
+      Schlüssel verschlüsselt mit <math|K<rsub|B>> an Bob
+
+      <item>Bob schickt Zeitstempel+1 verschlüsselt mit <math|K> an Alice
+    </enumerate-numeric>
+  </description>
+
+  <subsubsection|Asymmetrische Verfahren>
+
+  <\description>
+    <item*|Public-Key Transport>Alice wählt <math|K> und schickt ihn
+    (verschlüsselt mit <math|pk<rsub|B>>) an Bob.
+
+    Passive Sicherheit erreicht, aktive nicht (Replay-Angriffe); nicht
+    authentifiziert, wenn Kanal nicht authentifiziert.
+
+    Authentifizierung durch zusätzliche Signatur der übertragenen Nachricht
+    möglich
+
+    <item*|Diffie-Hellman-Schlüsselaustausch>Ähnlich ElGamal,
+    <math|\<bbb-G\>=<around*|\<langle\>|g|\<rangle\>>> gegeben.
+
+    Alice schickt <math|g<rsup|x>> an Bob, Bob schickt <math|g<rsup|y>> an
+    Alice <math|\<Rightarrow\>> gemeinsamer Schlüssel <math|g<rsup|x*y>>.
+    Kann durch das Signieren aller Nachrichten authentifiziert werden.
+  </description>
+
+  <subsubsection|TLS (Transport Layer Security)>
+
+  <\description>
+    <item*|Definition>Protokoll für Aufbau und Betrieb sicherer Kanäle.
+    Zuerst authentifizierter asymmetrischer Schlüsselaustausch, danach
+    symmetrische Verschlüsselung der Nutzdaten.
+
+    <item*|Angriffe><verbatim|ChangeCipherSpec> Drop durch aktiven Angreifer,
+    Angriff auf RSA-Padding, CRIME (Angriff auf komprimierte Kommunikation)
+  </description>
+
+  <subsubsection|Weitere Schlüsselaustauschprotokolle>
+
+  <\description>
+    <item*|IPsec>Ähnlich TLS, ohne Handshake, auf niedrigerer Protokollebene
+
+    <item*|PAKE (Password-Authenticated Key Exchange)>Alice, Bob haben
+    Passwort <verbatim|pass>, wollen gemeinsamen Schlüssel <math|K>
+    aushandeln.
+  </description>
+
   <subsection|Identifikationsprotokolle>
+
+  <\description>
+    <item*|Ziel>Asymmetrische Authentifikation von Parteien: Bob = V
+    (Verifier), Alice = P (Prover).
+
+    <item*|Nicht-interaktive Protokolle>Problematisch; übertragene Nachricht
+    kann von Angreifer verwendet werden. (FRAGE: Zeitstempel?)
+
+    <item*|Interaktiv>V sendet Zufallszahl <math|R>, P sendet
+    <math|Sig<around*|(|sk<rsub|A>,R|)>>. [Verfahren 1]
+
+    (Gen,P,V)-sicher, wenn das Signaturverfahren EUF-CMA-sicher ist.
+
+    <item*|Sicherheitsmodell (Gen,P,V)-Sicherheit>Schlüsselpar von
+    PPT-Algorithmus <math|Gen> erzeugt. Zwei zustandsbehaftete
+    PPT-Algorithmen interagieren solange, bis <math|V> 0 oder 1 ausgibt.
+
+    Sicherheit PK-ID-Protokoll: kein PPT-Angreifer gewinnt mehr als
+    vernachlässigbar oft: In Phase 1 darf <math|A> mit beliebig vielen
+    <math|P>-Instanzen als Verifier interagieren.
+    <math|<around*|(|pk<rsub|i>,sk<rsub|i>|)>> sind vom Spiel gewählt. In
+    Phase 2 sucht <math|\<cal-A\>> ein schon vom Spiel gewähltes
+    <math|pk<rsub|i>> aus und interagiert als Prover mit einer V-Instanz.
+    <math|\<cal-A\>> gewinnt, wenn <math|V> 1 ausgibt.
+
+    Verhindert keinen Man-in-the-Middle-Angriff.
+
+    <item*|Noch ein Protokoll><math|V> sendet Ciphertext einer Zufallszahl,
+    <math|P> entschlüsselt.
+
+    (Gen,P,V)-sicher, wenn Verschlüsselungsverfahren IND-CCA-sicher ist
+    (sicher unter aktiven Angriffen)
+  </description>
 
   <subsection|Zero-Knowledge-Protokolle>
 
+  <\description>
+    <item*|Ziel><math|V> soll nichts über <math|sk<rsub|A>> lernen können,
+    was er nicht schon aus <math|pk<rsub|A>> berechnen kann.
+
+    <item*|Zero-Knowledge-Eigenschaft (ZK)>Ein PK-ID-Protokoll (Gen,P,V) ist
+    ZK, falls für jeden PPT-Angreifer <math|\<cal-A\>> ein PPT-Simulator
+    <math|\<cal-S\>> existiert, sodass die Verteilung
+    <math|<around*|\<langle\>|P*<around*|(|sk|)>,\<cal-A\><around*|(|1<rsup|k>,pk|)>|\<rangle\>>>
+    und die Ausgabe von <math|\<cal-S\><around*|(|1<rsup|k>,pk|)>>
+    ununterscheidbar sind.
+
+    <item*|Nicht-Beispiel>Verfahren 1 von oben ist nicht ZK, da Simulator
+    eine Signatur fälschen müsste im Widerspruch zur EUF-CMA-Eigenschaft.
+
+    <item*|Commitments><math|Com<around*|(|M;R|)>> ist Commitment auf
+    <math|M> (mit Zufall <math|R>). Beispiel:
+    <math|Com<around*|(|M;R|)>=H<around*|(|M,R|)>>.
+
+    <\description>
+      <item*|Hiding-Eigenschaft>Verteilungen <math|Com<around*|(|M;R|)>> und
+      <math|Com<around*|(|M<rprime|'>;R|)>> ununterscheidbar
+
+      <item*|Binding-Eigenschaft>Höchstens vernachlässigbare
+      Wahrscheinlichkeit, dass PPT-Angreifer
+      <math|<around*|(|M<rprime|'>,R<rprime|'>|)>> findet mit
+      <math|Com<around*|(|M;R|)>=Com<around*|(|M<rprime|'>,R<rprime|'>|)>>.
+    </description>
+
+    <item*|Beispiel>Graph-Dreifärbbarkeit: <math|P> kennt Dreifärbung, wählt
+    Bijektion der Farben und committet sich auf permutierte Dreifärbung.
+    <math|V> wählt Kante; <math|P> öffnet entsprechende Commitments; <math|V>
+    akzeptiert gdw. Openings gültig und verschiedene Farben.
+
+    Sicherheit im PK-ID-Sinne: <math|k> mal durchführen
+
+    Simulator: <math|\<cal-S\>> übernimmt Rolle von <math|P>, wählt zufällige
+    Färbung, interagiert mit Angreifer, spult zurück bei Fehler. Laufzeit
+    erwartet polynomiell.
+
+    <item*|Proof-of-Knowledge-Eigenschaft (POK)>(Gen,P,V) ist POK, falls ein
+    PPT-Extraktor bei Zugriff auf einen erfolgreichen Prover einen geheimen
+    Schlüssel <math|sk> zu <math|pk> extrahieren kann.
+
+    Beispiel bei Dreifärbbarkeit: Wiederholtes Zurücksetzen von <math|P> auf
+    Stand nach Commitments und sukzessives Wählen der Kanten, bis alle
+    Knotenfarben bekannt.
+
+    <item*|PK-ID-Sicherheit>Aus ZK und POK folgt noch nicht PK-ID-Sicherheit,
+    da der geheime Schlüssel aus dem öffentlichen leicht berechenbar sein
+    könnte. Falls aber <math|pk\<rightarrow\>sk> hard-on-average ist, dann
+    folgt aus ZK und POK schon PK-ID-Sicherheit.
+
+    <item*|Weitere Anwendungen>Beliebige NP-Aussagen in ZK beweisbar, ohne
+    Zeugen herauszugeben.
+  </description>
+
   <subsection|Benutzerauthentifikation>
+
+  <\description>
+    <item*|Motivation>Authenfizierung von Benutzer <math|B> bei Server
+    <math|S> mit Passwort <verbatim|pw>. <math|S> sollte <verbatim|pw> nicht
+    kennen wg. Servereinbruch.
+
+    Lösung: Benutzer sendet <verbatim|pw>, Server speichert
+    <math|H<around*|(|pw|)>>.
+
+    <item*|Wörterbuchangriffe>Vergleiche <math|H<around*|(|pw|)>> mit
+    <math|H<around*|(|pw<rprime|'>|)>> für alle Wörterbucheinträge
+    <math|pw<rprime|'>>
+
+    Sehr langsam, wenn Wörterbuch groÿ <math|\<Rightarrow\>> wortiere
+    Wörterbuch nach Hashwert
+
+    Sehr groÿer Speicherplatzbedarf <math|\<Rightarrow\>> Komprimieren des
+    Wörterbuchs
+
+    <item*|Komprimieren des Wörterbuchs>Betrachte Ketten von
+    Hash-Passwort-Paaren, erzeugt aus Funktion <math|f> (Hash
+    <math|\<times\>> Passwort) <math|\<rightarrow\>> (Hash <math|\<times\>>
+    Passwort). Sortiere nach Endpunkten und berechne Endpunkt aus
+    <math|H<around*|(|pw|)>>.
+
+    <math|f> möglichst kollisionsfrei, sonst Ketten mit nicht eindeutigem
+    Anfangspunkt möglich
+
+    Es müssen nur Anfangs- und Endpunkt gespeichert werden.
+
+    <item*|Rainbow Tables>Korrigiert mögliche Überlappungen von Ketten:
+    Benutze <math|f<rsub|i>> für Spalte <math|i>. Farbe einer Spalte:
+    <math|i>. Nachteil: Alle Farben von <math|H<around*|(|pw|)>> müssen
+    probiert werden
+
+    <item*|Gegenmaÿnahme Salting>Server speichert <math|salt> und
+    <math|H<around*|(|salt,pw|)>>. Verhindert Wörterbuch- und
+    Rainbow-Table-Angriffe.
+
+    <item*|Gegenmaÿnahme Key Strengthening>Wende <math|H> sehr oft an (z.B.
+    feste Anzahl oder bis Bedingung erfüllt)
+
+    <item*|Parallelisierte Brute-Force-Angriffe>Mittlerweile effizienter als
+    Rainbow Tables, dank GPUs
+
+    <item*|Interaktive Nutzerauthentifikation>Verhindere Replay-Angriffe,
+    wenn Kommunikation unsicher (z.B. Internetcafe). Nutze z.B. sichere
+    Hardware (Chipkarte) und authentifiziere bei dieser mit Passwort oder PIN
+
+    <item*|Positionsbasierte Kryptographie>Authentifikation, dass <math|P>
+    sich an gegebener Position befindet. Mehrere Verifier <math|V> nötig.
+  </description>
 
   <subsection|Zugriffskontrolle>
 
@@ -456,18 +667,22 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|?>>
-    <associate|auto-10|<tuple|10|?>>
-    <associate|auto-11|<tuple|11|?>>
-    <associate|auto-12|<tuple|12|?>>
-    <associate|auto-13|<tuple|13|?>>
+    <associate|auto-10|<tuple|7.3|?>>
+    <associate|auto-11|<tuple|7.4|?>>
+    <associate|auto-12|<tuple|8|?>>
+    <associate|auto-13|<tuple|9|?>>
+    <associate|auto-14|<tuple|10|?>>
+    <associate|auto-15|<tuple|11|?>>
+    <associate|auto-16|<tuple|12|?>>
+    <associate|auto-17|<tuple|13|?>>
     <associate|auto-2|<tuple|2|?>>
     <associate|auto-3|<tuple|3|?>>
     <associate|auto-4|<tuple|4|?>>
     <associate|auto-5|<tuple|5|?>>
     <associate|auto-6|<tuple|6|?>>
     <associate|auto-7|<tuple|7|?>>
-    <associate|auto-8|<tuple|8|?>>
-    <associate|auto-9|<tuple|9|?>>
+    <associate|auto-8|<tuple|7.1|?>>
+    <associate|auto-9|<tuple|7.2|?>>
   </collection>
 </references>
 
