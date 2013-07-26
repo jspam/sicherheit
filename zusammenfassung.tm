@@ -9,7 +9,7 @@
 
   <\description>
     <item*|Kerckhoffs' Prinzip>Sicherheit des Verschlüsselungsverfahrens
-    beruht auf der Geheimhaltung des Schlüssels, nicht des Verfahrens
+    beruht auf der Geheimhaltung des Schlüssels, nicht des Verfahrens.
   </description>
 
   <subsection|Symmetrische Verschlüsselung>
@@ -56,7 +56,7 @@
       <math|K<rprime|'>\<in\><around*|{|0,1|}><rsup|k>>. Bitfolge
       <math|b<rsub|i>> ist der Schlüssel <math|G<around*|(|K|)>>.
 
-      <item*|Schieberegister (LSFR, Linear Feedback Shift Register)>VL02,
+      <item*|Schieberegister (LFSR, Linear Feedback Shift Register)>VL02,
       Seite 6. Ausgabe <math|b\<assign\>K<rsub|1>> (erstes Bit von <math|K>),
       neues Zustandsbit <math|z\<assign\><big-around|\<sum\>|<rsub|i=1><rsup|n>\<alpha\><rsub|i>K<rsub|i>>
       mod 2>.
@@ -64,16 +64,17 @@
       UNSICHER, selbst wenn <math|\<alpha\><rsub|i>> geheim.
 
       <item*|Eigenschaften>Schnell (vor allem in Hardware), ein oder mehrere
-      LSFRs.
+      LFSRs.
 
       Algebraische Angriffe möglich, wg. Schlüsselupdate Synchronisation
       nötig (TODO: ?), wie bei OTP Chiffrate verwundbar.
     </description>
 
-    <item*|Blockchiffren>Zentraler Baustein Funktion
+    <item*|Blockchiffren>Zentraler Baustein: invertierbare Funktion:
     <math|E:<around*|{|0,1|}><rsup|k>\<times\><around*|{|0,1|}><rsup|\<ell\>>\<rightarrow\><around*|{|0,1|}><rsup|\<ell\>>>
-    (Schlüssel + Klartextblock <math|\<rightarrow\>> Chiffratblock). <math|E>
-    + verschiedene <em|Betriebsmodi> <math|\<rightarrow\>> <math|Enc>
+    (Schlüssel <math|\<times\>> Klartextblock <math|\<rightarrow\>>
+    Chiffratblock). <math|E> + verschiedene <em|Betriebsmodi>
+    <math|\<rightarrow\>> <math|Enc>
 
     <\description>
       <item*|Electronic Codebook Mode (ECB)>Teile <math|M> in
@@ -113,7 +114,8 @@
       <math|k=56,\<ell\>=64>. Mittlerweile veraltet, da zu kurzer Schlüssel
 
       Rundenfunktion <math|F:<around*|{|0,1|}><rsup|48>\<times\><around*|{|0,1|}><rsup|32>\<rightarrow\><around*|{|0,1|}><rsup|32>>;
-      Feistelstruktur (TODO)
+      Feistelstruktur (<math|F> muss nicht invertierbar sein, Entschlüsselung
+      wie Verschlüsselung mit Teilschlüsseln in umgekehrter Reihenfolge.)
 
       <item*|2DES>Naive Verbesserung (zwei Schlüssel);
       Meet-in-the-Middle-Angriff möglich
@@ -132,7 +134,8 @@
       <item*|Lineare Kryptoanalyse>Finde <math|\<bbb-F\><rsub|2>>-lineare
       Abhängigkeiten zwischen den Bits von <math|X> und
       <math|E<around*|(|K,X|)>>. Bei Feistel-Verfahren mit <math|n> Runden
-      indirekter Angriff möglich (TODO)
+      indirekter Angriff möglich (Erweiterung auf <math|n-1> Runden +
+      vollständige Suche über ersten/letzten Schlüssel)
 
       <item*|Differentielle Kryptoanalyse>Betrachte Ausgabedifferenzen in
       Abhängigkeit von Eingabedifferenzen (dabei fällt Rundenschlüssel weg)
@@ -149,8 +152,8 @@
       Existenz von (mehrfach benutzbaren) semantisch sicheren Verfahren
       <math|\<Rightarrow\> P\<neq\>N P>.
 
-      <item*|IND-CPA (Indistinguisability under chosen-plaintext
-      attacks)>Kein effizienter Angreifer <math|\<cal-A\>> kann Chiffrate
+      <item*|IND-CPA (Indistinguishability under chosen-plaintext
+      attacks)>Kein PPT- Angreifer <math|\<cal-A\>> kann Chiffrate
       selbstgewählter Klartexte unterscheiden.
 
       Spiel: <math|\<cal-A\>> hat Zugriff auf
@@ -160,14 +163,13 @@
       es gehört.
 
       Schema IND-CPA-sicher, wenn für alle Angreifer die
-      Gewinnwahrscheinlichkeit nahe bei <math|1/2> liegt.
+      Gewinnwahrscheinlichkeit minus <math|<frac|1|2>> vernachlässigbar ist.
+      Insbesondere sind deterministische Verfahren nie IND-CPA-sicher!
 
       IND-CPA äquivalent zur semantischen Sicherheit.
 
       <\description>
-        <item*|ECB-Mode>Nicht semantisch sicher, da gleiche Nachricht
-        <math|\<Rightarrow\>> gleiches Chiffrat. <math|\<cal-A\>> kann also
-        die Chiffrate im Voraus berechnen und gewinnt immer.
+        <item*|ECB-Mode>deterministisch <math|\<Rightarrow\>> nicht sicher
 
         <item*|CBC>IND-CPA-sicher, wenn <math|E<around*|(|K,\<cdummy\>|)>>
         für zufälliges <math|K> ununterscheidbar von einer Zufallsfunktion
@@ -191,7 +193,8 @@
 
   <\description>
     <item*|Definition><math|H<rsub|k> : <around*|{|0,1|}><rsup|\<ast\>>\<rightarrow\><around*|{|0,1|}><rsup|k>>,
-    kurzer \RFingerabdruck`` groÿer Daten
+    kurzer \RFingerabdruck`` groÿer Daten. Kryptographische Hashfunktion:
+    kollisionsresistent und/oder Einwegfunktion.
 
     <item*|Kollisionsresistenz>Jeder PPT-Algorithmus findet nur mit höchstens
     vernachlässigbarer Wahrscheinlichkeit eine Kollision.
@@ -212,16 +215,27 @@
     gegebenen, aus <math|\<cal-X\><rsub|k>> gezogenen Bildes findet.
 
     Folgt aus Kollisionsresistenz: Zu jedem <math|H>-Invertierer kann ein
-    Kollisionsfinder angegeben werden (TODO)
+    Kollisionsfinder angegeben werden: Wähle Urbild <math|X> beliebig,
+    berechne <math|H<around*|(|X|)>> und setze
+    <math|X<rprime|'>\<assign\>H<rsup|-1><around*|(|X|)>>. Es ist
+    <math|X=X<rprime|'>> mit Wahrscheinlichkeit
+    <math|<frac|1|<around*|\||H<rsup|-1><around*|(|H<around*|(|X|)>|)>|\|>>>
+    und mit Wahrscheinlichkeit <math|\<geqslant\> 1-<frac|1|2<rsup|k>>> hat
+    <math|H<around*|(|X|)>> mehr als ein Urbild <math|\<Rightarrow\>>
+    Kollisionsfinder erfolgreich mit Wkt. <math|\<geqslant\> <frac|1|2>
+    P-<frac|1|2<rsup|k+1>>>, wobei <math|P> Erfolgswahrscheinlichkeit des
+    Invertierers.
 
     <item*|Target Collision Resistance>Gegeben <math|X>, finde
     <math|X<rprime|'>> mit <math|H<around*|(|X|)>=H<around*|(|X<rprime|'>|)>>.
-    Wird impliziert von Kollisionsresistenz und impliziert Einwegeigenschaft
+
+    Kollisionsresistenz <math|\<Rightarrow\>> Target Collision Resistance
+    <math|\<Rightarrow\>> Einwegeigenschaft.
 
     <item*|Merkle-Damgård-Konstruktion>Baue Hashfunktion aus einfacherem
     Baustein: Kompressionsfunktion <math|F:<around*|{|0,1|}><rsup|2k>\<rightarrow\><around*|{|0,1|}><rsup|k>>.
     Wiederholte Anwendung von <math|F> auf Nachrichtenblöcke, zu Anfang mit
-    einem Initialisierungsvektor
+    einem Initialisierungsvektor.
 
     <math|F> kollisionsresistent <math|\<Rightarrow\>> <math|H<rsub|MD>>
     kollisionsresistent
@@ -279,14 +293,16 @@
         N>, wenn <math|N=P*Q >und <math|P,Q> teilerfremd
       </description>
 
-      <item*|Sicherheit>RSA ist nicht semantisch sicher, da RSA
-      deterministisch: Information <math|f<around*|(|M|)>=M<rsup|e> mod N>
-      mit Chiffrat berechenbar. (Alternativ: Angreifer kann Nachrichten im
-      Sicherheitsspiel unterscheiden.)
+      <item*|Sicherheit>RSA ist deterministisch <math|\<Rightarrow\>> nicht
+      semantisch sicher. Auÿerdem: Chiffrat enthält Information
+      <math|f<around*|(|M|)>=M<rsup|e> mod N> über <math|M>, nicht allein aus
+      Länge ablesbar.
 
       <item*|Weitere Angriffe><math|e=3> für alle Benutzer problematisch,
-      wenn <math|M> an <math|\<geqslant\> 3> Benutzer gesendet wird. Gleiches
-      <math|N> für alle Benutzer ist auch problematisch.
+      wenn <math|M> an <math|\<geqslant\> 3> Benutzer gesendet wird (kennen
+      <math|M<rsup|e>=M<rsup|3> mod n<rsub|1>\<cdot\>n<rsub|2>\<cdot\>n<rsub|3>>
+      wg. chin. Restsatz, ziehe dritte Wurzel). Gleiches <math|N> für alle
+      Benutzer ist auch problematisch.
 
       <item*|Homomorphie><math|Enc<around*|(|pk,M|)>\<cdot\>Enc<around*|(|pk,M<rprime|'>|)>=Enc<around*|(|pk,M\<cdot\>M<rprime|'>|)>>.
 
@@ -298,7 +314,8 @@
     <math|sk=<around*|(|\<bbb-G\>,g,x|)>> mit zufälligem <math|x>.
 
     <math|Enc<around*|(|pk,M|)>=<around*|(|g<rsup|y>,g<rsup|x*y>\<cdot\>M|)>>
-    mit zufälligem <math|y>; <math|Dec<around*|(|sk,<around*|(|X,Z|)>|)>=Z/Y<rsup|x>>
+    mit zufälligem <math|y>; <math|Dec<around*|(|sk,<around*|(|Y,Z|)>|)>=Z/Y<rsup|x>>
+    (alles modulo <math|p>)
 
     Homomorph wie RSA (nicht-homomorphe Varianten existieren).
 
@@ -311,8 +328,8 @@
       <item*|Sicherheit>Unter naheliegender Annahme semantisch sicher.
     </description>
 
-    <item*|Semantische Sicherheit für PK-Verfahren>wie für symetrische
-    Verfahren, äquivalent zu IND-CPA
+    <item*|Semantische Sicherheit für PK-Verfahren>wie für symmetrische
+    Verfahren, äquivalent zu IND-CPA.
   </description>
 
   <subsection|Symmetrische Nachrichtenauthentifikation: MACs>
@@ -330,7 +347,7 @@
     <math|K,M,\<sigma\>\<leftarrow\>Sig<around*|(|K,M|)>>.
 
     <item*|EUF-CMA-Sicherheit (Existential unforgability under chosen message
-    attack)>Spiel: <verbatim|<math|\<cal-A\>>> hat Zugriff auf
+    attack)><verbatim|<math|\<cal-A\>>> hat Zugriff auf
     <math|Sig<around*|(|K,\<cdummy\>|)>>-Orakel; gewinnt, wenn er neue(!)
     Nachricht <math|M> mit gültiger Signatur erzeugen kann.
 
@@ -345,7 +362,8 @@
     <item*|Pseudorandom Functions>Ununterscheidbar von echtem Zufall.
     Beispiel <math|PRF<around*|(|K,X|)>=H<around*|(|K,X|)>>. Aber z.B. bei
     MD-Konstruktion wird PRF-Eigenschaft gebrochen für Nachrichten
-    unterschiedlicher Länge (Hashwert kann \Rerweitert`` werden).
+    unterschiedlicher Länge (Hashwert kann \Rerweitert`` werden:
+    <math|H<around*|(|X,X<rprime|'>|)>=F<around*|(|X<rprime|'>,H<around*|(|X|)>|)>>).
 
     <item*|PRF und Hashfunktion <math|\<rightarrow\>>
     MAC><math|Sig<around*|(|K,M|)>=PRF<around*|(|K,H<around*|(|M|)>|)>> für
@@ -409,26 +427,31 @@
     </description>
 
     <item*|ElGamal-Signaturen><math|pk=<around*|(|\<bbb-G\>,g,g<rsup|x>|)>>,
-    <math|sk=<around*|(|\<bbb-G\>,g,x|)>> wie bei ElGamal-Verschlüsselung
+    <math|sk=<around*|(|\<bbb-G\>,g,x|)>> wie bei ElGamal-Verschlüsselung.
+    Verwende Untergruppe (Ordnung <math|<around*|\||\<bbb-G\>|\|>=q>) von
+    zyklischer Gruppe <math|<around*|\<langle\>|g|\<rangle\>>> mit Ordnung
+    <math|p>.
 
-    Setze <math|a\<assign\>g<rsup|e>> für zufälliges <math|e>; <math|b> als
-    Lösung von <math|a*x+e*b=M mod <around*|\||\<bbb-G\>|\|>>
+    Setze <math|a\<assign\>g<rsup|e>> mod <math|p> für zufälliges <math|e>;
+    <math|b> als Lösung von <math|a*x+e*b=M mod q>
 
     <math|Sig<around*|(|sk,M|)>=<around*|(|a,b|)>>,
     <math|Ver<around*|(|pk,M,\<sigma\>|)>=1
-    :\<Leftrightarrow\><around*|(|g<rsup|x>|)><rsup|a>a<rsup|b>=g<rsup|M>>.
-    Dabei <math|a=g<rsup|e>> sowohl als <math|\<bbb-G\>>-Element als auch als
-    Expontent verwendet.
+    :\<Leftrightarrow\><around*|(|g<rsup|x>|)><rsup|a>a<rsup|b>=g<rsup|M> mod
+    p>. Dabei <math|a=g<rsup|e>> sowohl als <math|\<bbb-G\>>-Element als auch
+    als Expontent verwendet.
 
-    Es darf für verschiedene <math|M> nie dasselbe <math|e> verwendet werden.
+    Es darf für verschiedene <math|M> nie dasselbe <math|e> verwendet werden,
+    <math|e> darf nicht deterministisch sein.
 
-    Wie RSA nicht EUF-CMA-sicher (TODO VL07, S. 25)
+    Wie RSA nicht EUF-CMA-sicher, da Nachricht 0 signierbar mit
+    <math|<around*|(|a,b|)>=<around*|(|g<rsup|x>,-a|)>> für alle geheimen
+    Schlüssel <math|x>.
 
     <item*|Hash-then-sign>Wie bei MACs, auch EUF-CMA-Sicherheit.
 
     <item*|DSA (Digital Signature Algorithm)>Wie ElGamal, aber nicht
-    <math|a*x+e*b=M mod <around*|\||\<bbb-G\>|\|>>, sondern
-    <math|a*x+e*b=H<around*|(|M|)> mod <around*|\||\<bbb-G\>|\|>>.
+    <math|a*x+e*b=M mod q>, sondern <math|a*x+e*b=H<around*|(|M|)> mod q>.
     EUF-CMA-Sicherheit gegenwärtig unklar.
   </description>
 
@@ -446,8 +469,8 @@
     mit KC soll minimiert werden. Verwendung von symmetrischer
     Verschlüsselung.
 
-    <item*|Kerberos>Aktiv sichere Verschlüsselung nötig, Sicherheit nicht
-    formal geklärt. Authentifiziert Alice und Bob auch.
+    <item*|Kerberos>Aktiv sichere Verschlüsselung und synchrone Uhren nötig,
+    Sicherheit nicht formal geklärt. Authentifiziert Alice und Bob auch.
 
     <\enumerate-numeric>
       <item>Alice schickt <math|<around*|(|Alice,Bob|)>> an KC
@@ -527,8 +550,8 @@
     <math|P>-Instanzen als Verifier interagieren.
     <math|<around*|(|pk<rsub|i>,sk<rsub|i>|)>> sind vom Spiel gewählt. In
     Phase 2 sucht <math|\<cal-A\>> ein schon vom Spiel gewähltes
-    <math|pk<rsub|i>> aus und interagiert als Prover mit einer V-Instanz.
-    <math|\<cal-A\>> gewinnt, wenn <math|V> 1 ausgibt.
+    <math|pk<rsub|i<rsup|\<ast\>>>> aus und interagiert als Prover mit einer
+    V-Instanz. <math|\<cal-A\>> gewinnt, wenn <math|V> 1 ausgibt.
 
     Verhindert keinen Man-in-the-Middle-Angriff.
 
@@ -611,7 +634,7 @@
     <math|H<around*|(|pw<rprime|'>|)>> für alle Wörterbucheinträge
     <math|pw<rprime|'>>
 
-    Sehr langsam, wenn Wörterbuch groÿ <math|\<Rightarrow\>> wortiere
+    Sehr langsam, wenn Wörterbuch groÿ <math|\<Rightarrow\>> sortiere
     Wörterbuch nach Hashwert
 
     Sehr groÿer Speicherplatzbedarf <math|\<Rightarrow\>> Komprimieren des
@@ -706,8 +729,8 @@
       auf die <math|s> schon Zugriff hatte, gilt
       <math|y<around*|(|o|)>=y<around*|(|o<rprime|'>|)>> oder
       <math|y<around*|(|o|)>\<nin\>x<around*|(|o<rprime|'>|)>> (gehören
-      entweder zur gleichen Firma oder stehen nicht mit <math|o<rprime|'>> in
-      Konflikt)
+      entweder zur gleichen Firma wie <math|o> oder stehen nicht mit der
+      Firma von <math|o> in Konflikt)
 
       <item*|Star Property (<math|\<star\>>)>Für <strong|Schreib>anfragen:
       Für alle Objekte <math|o<rprime|'>>, auf die <math|s> schon
@@ -907,9 +930,17 @@
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-16>>
 
-      <with|par-left|<quote|1.5fn>|Häufige Sicherheitslücken
+      <with|par-left|<quote|3fn>|Security-Zugang
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-17>>
+
+      <with|par-left|<quote|3fn>|Kryptographischer Zugang
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-18>>
+
+      <with|par-left|<quote|1.5fn>|Häufige Sicherheitslücken
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-19>>
     </associate>
   </collection>
 </auxiliary>
